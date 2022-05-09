@@ -33,9 +33,6 @@ Nexus.Sequencer('#seq',{
 sequencer.colorize("fill","#808080")
 sequencer.colorize("accent","#000000")
 
-
-
-
 //initialize array
 
 
