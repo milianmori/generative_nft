@@ -1,0 +1,8 @@
+body {background-color: white;}
+h1 {
+    font-family:monospace;
+    color: black;
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+}
