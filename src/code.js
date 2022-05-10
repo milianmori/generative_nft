@@ -52,9 +52,6 @@ const startButton = document.getElementById('start');
 //const stopButton = document.getElementById('stop');
 //const newRandomGainsButton = document.getElementById('init');
 
-/*document.getElementById('init').addEventListener('click', () => {
-    console.log('blubb');
-})*/
 
 frequencies.forEach((item,index) => {
     frequencies[index] = MidiClass.mtof(MidiClass.ftom(Math.pow(index +offsetFRQ,2)));
@@ -97,6 +94,43 @@ function shuffle(array) {
 	return array;
 }
 
+
+function triggerABS()
+{   
+    const array = [1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0];
+    const arrayABS = [];
+    var x = 0;
+    var z = 0;
+    var y = new Boolean(false);
+    var a = new Boolean(false);
+
+        for (var i = 0; i < 16; i++) {
+            if (i === 15)
+            {   
+                z++;
+                arrayABS[x] = z;
+            }
+            else if (array[i] === 0) {
+                if (y === true){
+                    a = true;
+                    z++;
+                }
+            }
+            else if (array[i] === 1){
+                y = true;
+                if (i > 0 && a === true){
+                    z++;
+                    arrayABS[x] = z;
+                    x++;
+                    z = 0;
+                }
+            }
+          }
+    console.log(arrayABS);
+    return(arrayABS);
+
+}
+
 function kickRhythm(array){
 
     while(true) {
@@ -108,9 +142,9 @@ function kickRhythm(array){
             break;
         }
     }
+    triggerABS();
     sequencer.matrix.set.row(2,array);
-
-};
+}
 
 /*function bassRhythm1(){
 
