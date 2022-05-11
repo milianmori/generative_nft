@@ -80,12 +80,12 @@ const env = new AmplitudeEnvelope({
 }).toDestination();
 
 function shuffle(array) {
-    //const r = (from = 0, to = 1) => from + Math.random() * (to - from);
+    const r = (from = 0, to = 1) => from + Math.random() * (to - from);
 	var m = array.length,
 		t,
 		i;
 	while (m) {
-		i = Math.floor(Math.random() * m--); 
+		i = Math.floor(r() * m--); 
 		t = array[m]; // temporary storage
 		array[m] = array[i];
 		array[i] = t;
@@ -95,9 +95,8 @@ function shuffle(array) {
 }
 
 
-function triggerABS()
+function triggerABS(array)
 {   
-    const array = [1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0];
     const arrayABS = [];
     var x = 0;
     var z = 0;
@@ -131,19 +130,44 @@ function triggerABS()
 
 }
 
+
+
 function kickRhythm(array){
 
-    while(true) {
-        array = shuffle(array);
-        if (array.every((e,i) => {
-            if(e === 1) return i % 2 === 0;
+    var count = 0;
+    array.forEach((e,i) =>{
+        if(e===1) count++;
+    });
+    console.log(count);
+
+    var arrayABS = [];
+    while (true)
+    {
+        while(true) {
+            array = shuffle(array);
+            if (array.every((e,i) => {
+                if(e === 1) return i % 2 === 0;
+                else return true; // wenns kein schlag ist alles gut, soll weither ggehen
+            })) {
+                break;
+            }
+        }
+        
+        console.log(array);
+
+        arrayABS = triggerABS(array);
+
+        if (arrayABS.every((e,i) => {
+            if(e === 3 && i === count-1) return true;
+            else if(e < 4 && i < 2) return false;
             else return true; // wenns kein schlag ist alles gut, soll weither ggehen
         })) {
             break;
         }
+
+
     }
-    triggerABS();
-    sequencer.matrix.set.row(2,array);
+return array;
 }
 
 /*function bassRhythm1(){
@@ -159,15 +183,18 @@ startButton.addEventListener('click', async () => {
 
     const bar1Kick = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
     const bar2Kick = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    const bar4Kick = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar3Kick = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
     sequencer.matrix.set.row(0,bar);
     sequencer.matrix.set.row(1,quarterNote);
     
 
-    kickRhythm(bar1Kick);
-    //bassRhythm1()
+    const generatedBar1 = kickRhythm(bar1Kick);
+    const generatedBar2 = kickRhythm(bar2Kick);
+    const generatedBar3 = kickRhythm(bar3Kick);
 
+    const fullgeneratedKick = generatedBar1.concat(generatedBar2,generatedBar3);
+    sequencer.matrix.set.row(2,fullgeneratedKick);
 
     await bufferKick1.load(audioFileUrlKick1);
     await bufferKick2.load(audioFileUrlKick2);
