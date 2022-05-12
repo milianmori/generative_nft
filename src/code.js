@@ -134,6 +134,10 @@ function triggerABS(array)
 
 function kickRhythm(array){
 
+    if (flag === 1){
+
+    }
+
     var count = 0;
     array.forEach((e,i) =>{
         if(e===1) count++;
@@ -158,8 +162,8 @@ function kickRhythm(array){
         arrayABS = triggerABS(array);
 
         if (arrayABS.every((e,i) => {
-            if(e === 3 && i === count-1) return true;
-            else if(e < 4 && i < 2) return false;
+
+            if(e < 4 && i < 2) return false;
             else return true; // wenns kein schlag ist alles gut, soll weither ggehen
         })) {
             break;
@@ -190,6 +194,7 @@ startButton.addEventListener('click', async () => {
     
 
     const generatedBar1 = kickRhythm(bar1Kick);
+    //var flag = checklastTrigger(bar1Kick);
     const generatedBar2 = kickRhythm(bar2Kick);
     const generatedBar3 = kickRhythm(bar3Kick);
 
