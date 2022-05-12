@@ -132,11 +132,7 @@ function triggerABS(array)
 
 
 
-function kickRhythm(array){
-
-    if (flag === 1){
-
-    }
+function kickRhythm(array,flag){
 
     var count = 0;
     array.forEach((e,i) =>{
@@ -161,13 +157,37 @@ function kickRhythm(array){
 
         arrayABS = triggerABS(array);
 
-        if (arrayABS.every((e,i) => {
-
-            if(e < 4 && i < 2) return false;
-            else return true; // wenns kein schlag ist alles gut, soll weither ggehen
-        })) {
-            break;
+        if(flag === 1){
+            console.log('A');
+            if(array[0] === 0){
+                console.log('B');
+                if (arrayABS.every((e,i) => {
+                    if(e < 4 && i === count-1){
+                        console.log('hello');
+                        return true
+                    }
+                    else if(e < 4) return false;
+                    else return true;
+                })) {
+                    break;
+                }
+            }
         }
+
+        else if (flag === 0){
+            console.log('C');
+            if (arrayABS.every((e,i) => {
+                if(e < 4 && i === count-1){
+                    console.log('hello');
+                    return true
+                }
+                else if(e < 4) return false;
+                else return true;
+            })) {
+                break;
+            }
+        }
+
 
 
     }
@@ -178,28 +198,54 @@ return array;
 
 };*/
 
+function checklastTrigger(array){
+    if(array[14] === 1 ) return 1;
+    else return 0;
+}
+
+
 startButton.addEventListener('click', async () => {
     await start();
     Transport.start();
 
+    //Initialize Bar and Beat
     const bar = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     const quarterNote = [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0];
+    sequencer.matrix.set.row(0,bar);
+    sequencer.matrix.set.row(1,quarterNote);
 
+    //Generate Kicks
     const bar1Kick = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
     const bar2Kick = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     const bar3Kick = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
-    sequencer.matrix.set.row(0,bar);
-    sequencer.matrix.set.row(1,quarterNote);
-    
-
-    const generatedBar1 = kickRhythm(bar1Kick);
-    //var flag = checklastTrigger(bar1Kick);
-    const generatedBar2 = kickRhythm(bar2Kick);
-    const generatedBar3 = kickRhythm(bar3Kick);
+    var flag = 0;
+    const generatedBar1 = kickRhythm(bar1Kick,flag);
+    flag = checklastTrigger(bar1Kick);
+    const generatedBar2 = kickRhythm(bar2Kick,flag);
+    flag = checklastTrigger(bar2Kick);
+    const generatedBar3 = kickRhythm(bar3Kick,flag);
 
     const fullgeneratedKick = generatedBar1.concat(generatedBar2,generatedBar3);
     sequencer.matrix.set.row(2,fullgeneratedKick);
+
+    //Generate Bass
+    const bar1Bass = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar2Bass = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar3Bass = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+    var flag = 0;
+    const generatedBar1 = kickRhythm(bar1Kick,flag);
+    flag = checklastTrigger(bar1Kick);
+    const generatedBar2 = kickRhythm(bar2Kick,flag);
+    flag = checklastTrigger(bar2Kick);
+    const generatedBar3 = kickRhythm(bar3Kick,flag);
+
+
+    
+
+
+ 
 
     await bufferKick1.load(audioFileUrlKick1);
     await bufferKick2.load(audioFileUrlKick2);
