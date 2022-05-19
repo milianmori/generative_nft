@@ -10,8 +10,24 @@ import audioFileUrlKick2 from 'url:./samples/kick02.mp3';
 import audioFileUrlKick3 from 'url:./samples/kick03.mp3';
 
 import audioFileUrlBass101 from 'url:./samples/bass101.mp3';
-import audioFileUrlBass102 from 'url:./samples/bass102.mp3';
-import audioFileUrlBass103 from 'url:./samples/bass103.mp3';
+
+import audioFileUrlKlick1 from 'url:./samples/klick1.mp3';
+import audioFileUrlKlick2 from 'url:./samples/klick2.mp3';
+import audioFileUrlKlick3 from 'url:./samples/klick3.mp3';
+import audioFileUrlKlick4 from 'url:./samples/klick4.mp3';
+import audioFileUrlKlick5 from 'url:./samples/klick5.mp3';
+import audioFileUrlKlick6 from 'url:./samples/klick6.mp3';
+import audioFileUrlKlick7 from 'url:./samples/klick7.mp3';
+import audioFileUrlKlick8 from 'url:./samples/klick8.mp3';
+import audioFileUrlKlick9 from 'url:./samples/klick9.mp3';
+import audioFileUrlKlick10 from 'url:./samples/klick10.mp3';
+import audioFileUrlKlick11 from 'url:./samples/klick11.mp3';
+import audioFileUrlKlick12 from 'url:./samples/klick12.mp3';
+import audioFileUrlKlick13 from 'url:./samples/klick13.mp3';
+import audioFileUrlKlick14 from 'url:./samples/klick14.mp3';
+import audioFileUrlKlick15 from 'url:./samples/klick15.mp3';
+import audioFileUrlKlick16 from 'url:./samples/klick16.mp3';
+
 
 //initialize kicks into buffer
 const bufferKick1 = new ToneAudioBuffer();
@@ -19,11 +35,45 @@ const bufferKick2 = new ToneAudioBuffer();
 const bufferKick3 = new ToneAudioBuffer();
 
 const bufferBass101 = new ToneAudioBuffer();
-const bufferBass102 = new ToneAudioBuffer();
-const bufferBass103 = new ToneAudioBuffer();
+
+const bufferKlick1 = new ToneAudioBuffer();
+const bufferKlick2 = new ToneAudioBuffer();
+const bufferKlick3 = new ToneAudioBuffer();
+const bufferKlick4 = new ToneAudioBuffer();
+const bufferKlick5 = new ToneAudioBuffer();
+const bufferKlick6 = new ToneAudioBuffer();
+const bufferKlick7 = new ToneAudioBuffer();
+const bufferKlick8 = new ToneAudioBuffer();
+const bufferKlick9 = new ToneAudioBuffer();
+const bufferKlick10 = new ToneAudioBuffer();
+const bufferKlick11 = new ToneAudioBuffer();
+const bufferKlick12 = new ToneAudioBuffer();
+const bufferKlick13 = new ToneAudioBuffer();
+const bufferKlick14 = new ToneAudioBuffer();
+const bufferKlick15 = new ToneAudioBuffer();
+const bufferKlick16 = new ToneAudioBuffer();
 
 //initialize player
-const playerKick = new Player(bufferKick1).toDestination();
+const playerKick1 = new Player(bufferKick1).toDestination();
+const playerKick2 = new Player(bufferKick2).toDestination();
+const playerKick3 = new Player(bufferKick3).toDestination();
+const playerBass = new Player(bufferBass101).toDestination();
+const playerKlick1 = new Player(bufferKlick1).toDestination();
+const playerKlick2 = new Player(bufferKlick2).toDestination();
+const playerKlick3 = new Player(bufferKlick3).toDestination();
+const playerKlick4 = new Player(bufferKlick4).toDestination();
+const playerKlick5 = new Player(bufferKlick5).toDestination();
+const playerKlick6 = new Player(bufferKlick6).toDestination();
+const playerKlick7 = new Player(bufferKlick7).toDestination();
+const playerKlick8 = new Player(bufferKlick8).toDestination();
+const playerKlick9 = new Player(bufferKlick9).toDestination();
+const playerKlick10 = new Player(bufferKlick10).toDestination();
+const playerKlick11 = new Player(bufferKlick11).toDestination();
+const playerKlick12 = new Player(bufferKlick12).toDestination();
+const playerKlick13 = new Player(bufferKlick13).toDestination();
+const playerKlick14 = new Player(bufferKlick14).toDestination();
+const playerKlick15 = new Player(bufferKlick15).toDestination();
+const playerKlick16 = new Player(bufferKlick16).toDestination();
 
 //Sequencer Interface
 var sequencer = new
@@ -295,7 +345,45 @@ function checklastTrigger(array){
     else return 0;
 }
 
+function generateKlicks(){
 
+    var array = new Array(48).fill(0);
+    var random = 0;
+    var flag = 0;
+    var counteroff = Math.ceil(Math.random()*4);
+    var counteron = Math.ceil(Math.random()*4);
+
+    array = array.map((e,i) => {
+
+        random = Math.random()
+        if (flag === 0)
+        {   
+            if(counteroff === 0){
+                counteron = Math.ceil(Math.random()*5);
+                flag = 1;
+                return 0;
+            }
+            counteroff--;
+            return 0;
+        }
+
+        else
+        {   
+            if(counteron === 0){
+                flag = 0;
+                counteroff = Math.ceil(Math.random()*4);
+                return 1;
+            }
+            counteron--;
+            return 1;
+        }
+    });
+
+
+    console.log(array);
+    return array;
+
+}
 
 generateButton.addEventListener('click', async () => {
     await start();
@@ -320,7 +408,7 @@ generateButton.addEventListener('click', async () => {
     const generatedBar3Kick = kickRhythm(bar3Kick,flag);
 
     const fullgeneratedKick = generatedBar1Kick.concat(generatedBar2Kick,generatedBar3Kick);
-    const output = generatedBar1Kick.concat(generatedBar2Kick,generatedBar3Kick);
+    var output = generatedBar1Kick.concat(generatedBar2Kick,generatedBar3Kick);
     sequencer.matrix.set.row(2,output);
 
     const fullKickOutput = [generatedBar1Kick, generatedBar2Kick, generatedBar3Kick];
@@ -338,7 +426,8 @@ generateButton.addEventListener('click', async () => {
     const generatedBar3Bass = bassRhythm(bar3Bass,fullKickOutput,flag,2);
 
     const fullgeneratedBass = generatedBar1Bass.concat(generatedBar2Bass,generatedBar3Bass);
-    sequencer.matrix.set.row(3,fullgeneratedBass);
+    var output = generatedBar1Bass.concat(generatedBar2Bass,generatedBar3Bass);
+    sequencer.matrix.set.row(3,output);
 
     const fullBassOutput = [generatedBar1Kick, generatedBar2Kick, generatedBar3Kick];
 
@@ -357,24 +446,53 @@ generateButton.addEventListener('click', async () => {
     const fullgeneratedRhythmFigure1 = generatedRhythmFigure1Bar1.concat(generatedRhythmFigure1Bar2,generatedRhythmFigure1Bar3);
     sequencer.matrix.set.row(4,fullgeneratedRhythmFigure1);
 
+    // Generate Klicks
+    const fullgeneratedKlicks = generateKlicks();
+    
+
+
     // load audio samples
     await bufferKick1.load(audioFileUrlKick1);
     await bufferKick2.load(audioFileUrlKick2);
     await bufferKick3.load(audioFileUrlKick3);
 
     await bufferBass101.load(audioFileUrlBass101);
-    await bufferBass102.load(audioFileUrlBass102);
-    await bufferBass103.load(audioFileUrlBass103);
 
-    //play sounds
-    function play(time, note) {
-        console.log('trigger', time, note)
-        playerKick.start(time);
+    await bufferKlick1.load(audioFileUrlKlick1);
+    await bufferKlick2.load(audioFileUrlKlick2);
+    await bufferKlick3.load(audioFileUrlKlick3);
+    await bufferKlick4.load(audioFileUrlKlick4);
+    await bufferKlick5.load(audioFileUrlKlick5);
+    await bufferKlick6.load(audioFileUrlKlick6);
+    await bufferKlick7.load(audioFileUrlKlick7);
+    await bufferKlick8.load(audioFileUrlKlick8);
+    await bufferKlick9.load(audioFileUrlKlick9);
+    await bufferKlick10.load(audioFileUrlKlick10);
+    await bufferKlick11.load(audioFileUrlKlick11);
+    await bufferKlick12.load(audioFileUrlKlick11);
+    await bufferKlick12.load(audioFileUrlKlick12);
+    await bufferKlick13.load(audioFileUrlKlick13);
+    await bufferKlick14.load(audioFileUrlKlick14);
+    await bufferKlick15.load(audioFileUrlKlick15);
+    await bufferKlick16.load(audioFileUrlKlick16);
+
+
+    //start transport
+    Transport.bpm.value = 120;
+    Transport.start();
+
+    //------>>>>play Kick 
+    function playKick(time, note) {
+        console.log('kick', time, note)
+        const random = Math.ceil(Math.random()*3);
+        if(random === 3) playerKick1.start(time);
+        else if(random === 2) playerKick2.start(time);
+        else playerKick3.start(time);
+        
     };
 
-    console.log(fullgeneratedKick);
     var current = 0;
-    var pattern = fullgeneratedKick
+    var patternKick = fullgeneratedKick
         .map((e,i) => {
             if(i<=15){
                 current = i;
@@ -389,30 +507,96 @@ generateButton.addEventListener('click', async () => {
                 return [e, `2:${Math.floor(current/4)}:${i%4}`]
             }
         });
+    patternKick = patternKick.filter(e => e[0] === 1)
+    patternKick = patternKick.map((e,i) => [e[1], `C${i}`]);
 
-    console.log(pattern);
+    const partKick = new Part(playKick, patternKick);
 
-    pattern = pattern.filter(e => e[0] === 1)
+    partKick.loopEnd = '3:0:0';
+    partKick.loop = true;
+    partKick.start();
 
-    console.log(pattern);
+    //------>>>>play Bass
+    function playBass(time, note) {
+        console.log('bass', time, note)
+        playerBass.start(time);
+    };
 
-    pattern = pattern.map((e,i) => [e[1], `C${i}`]);
+    console.log(fullgeneratedBass);
+    current = 0;
+    var patternBass = fullgeneratedBass
+        .map((e,i) => {
+            if(i<=15){
+                current = i;
+                return [e, `0:${Math.floor(current/4)}:${i%4}`]
+            }
+            else if(i>=16 && i<32) {
+                current = i-16;
+                return [e, `1:${Math.floor(current/4)}:${i%4}`]
+            } 
+            else{
+                current = i-32;
+                return [e, `2:${Math.floor(current/4)}:${i%4}`]
+            }
+        });
+    patternBass = patternBass.filter(e => e[0] === 1)
+    patternBass = patternBass.map((e,i) => [e[1], `C${i}`]);
 
-    console.log(pattern);
+    const partBass = new Part(playBass, patternBass);
 
-    //console.log(pattern);
-    const part = new Part(play, pattern);
-
-    Transport.bpm.value = 150;
-    //Transport.start();
-
+    partBass.loopEnd = '3:0:0';
+    partBass.loop = true;
+    partBass.start();
     
-    //part.length = 48;
-    part.loopEnd = '3:0:0';
-    part.loop = true;
-    console.log(part.loopEnd);
-    part.start();
-    
+    //------>>>>play Klick
+    function playKlick(time, note) {
+        console.log('klick', time, note)
+        const random = Math.floor(Math.random()*16);
+        if (random === 0) playerKlick1.start(time);
+        if (random === 1) playerKlick2.start(time);
+        if (random === 2) playerKlick3.start(time);
+        if (random === 3) playerKlick4.start(time);
+        if (random === 4) playerKlick5.start(time);
+        if (random === 5) playerKlick6.start(time);
+        if (random === 6) playerKlick7.start(time);
+        if (random === 7) playerKlick8.start(time);
+        if (random === 8) playerKlick9.start(time);
+        if (random === 9) playerKlick10.start(time);
+        if (random === 10) playerKlick11.start(time);
+        if (random === 11) playerKlick12.start(time);
+        if (random === 12) playerKlick13.start(time);
+        if (random === 13) playerKlick14.start(time);
+        if (random === 14) playerKlick15.start(time);
+        if (random === 15) playerKlick16.start(time);
+    };
+
+    console.log(fullgeneratedKlicks);
+    current = 0;
+    var patternKlick = fullgeneratedKlicks
+        .map((e,i) => {
+            if(i<=15){
+                current = i;
+                return [e, `0:${Math.floor(current/4)}:${i%4}`]
+            }
+            else if(i>=16 && i<32) {
+                current = i-16;
+                return [e, `1:${Math.floor(current/4)}:${i%4}`]
+            } 
+            else{
+                current = i-32;
+                return [e, `2:${Math.floor(current/4)}:${i%4}`]
+            }
+        });
+    patternKlick = patternKlick.filter(e => e[0] === 1)
+    patternKlick = patternKlick.map((e,i) => [e[1], `C${i}`]);
+
+    const partKlick = new Part(playKlick, patternKlick);
+
+    partKlick.loopEnd = '3:0:0';
+    partKlick.loop = true;
+    partKlick.start();
+
+    sequencer.matrix.set.row(5,fullgeneratedKlicks);
 
 });
 
