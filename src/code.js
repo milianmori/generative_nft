@@ -1,7 +1,7 @@
 "use strict";
 //import * as Tone from 'tone';
 
-import { start, MidiClass, Part, Oscillator, Gain, Transport, AmplitudeEnvelope, Synth, Offline, ToneAudioBuffer, Player} from 'tone';
+import {Reverb, Tremolo, Noise, start, MidiClass, Part, Oscillator, Gain, Transport, AmplitudeEnvelope, Synth, Offline, ToneAudioBuffer, Player} from 'tone';
 import * as Nexus from 'nexusui';
 
 //import files
@@ -53,34 +53,45 @@ const bufferKlick14 = new ToneAudioBuffer();
 const bufferKlick15 = new ToneAudioBuffer();
 const bufferKlick16 = new ToneAudioBuffer();
 
-//initialize player
+const klickMasterGain = new Gain(0.8).toDestination();
+
+//initialize palyers
 const playerKick1 = new Player(bufferKick1).toDestination();
 const playerKick2 = new Player(bufferKick2).toDestination();
 const playerKick3 = new Player(bufferKick3).toDestination();
 const playerBass = new Player(bufferBass101).toDestination();
-const playerKlick1 = new Player(bufferKlick1).toDestination();
-const playerKlick2 = new Player(bufferKlick2).toDestination();
-const playerKlick3 = new Player(bufferKlick3).toDestination();
-const playerKlick4 = new Player(bufferKlick4).toDestination();
-const playerKlick5 = new Player(bufferKlick5).toDestination();
-const playerKlick6 = new Player(bufferKlick6).toDestination();
-const playerKlick7 = new Player(bufferKlick7).toDestination();
-const playerKlick8 = new Player(bufferKlick8).toDestination();
-const playerKlick9 = new Player(bufferKlick9).toDestination();
-const playerKlick10 = new Player(bufferKlick10).toDestination();
-const playerKlick11 = new Player(bufferKlick11).toDestination();
-const playerKlick12 = new Player(bufferKlick12).toDestination();
-const playerKlick13 = new Player(bufferKlick13).toDestination();
-const playerKlick14 = new Player(bufferKlick14).toDestination();
-const playerKlick15 = new Player(bufferKlick15).toDestination();
-const playerKlick16 = new Player(bufferKlick16).toDestination();
+const playerKlick1 = new Player(bufferKlick1).connect(klickMasterGain);
+const playerKlick2 = new Player(bufferKlick2).connect(klickMasterGain);
+const playerKlick3 = new Player(bufferKlick3).connect(klickMasterGain);
+const playerKlick4 = new Player(bufferKlick4).connect(klickMasterGain);
+const playerKlick5 = new Player(bufferKlick5).connect(klickMasterGain);
+const playerKlick6 = new Player(bufferKlick6).connect(klickMasterGain);
+const playerKlick7 = new Player(bufferKlick7).connect(klickMasterGain);
+const playerKlick8 = new Player(bufferKlick8).connect(klickMasterGain);
+const playerKlick9 = new Player(bufferKlick9).connect(klickMasterGain);
+const playerKlick10 = new Player(bufferKlick10).connect(klickMasterGain);
+const playerKlick11 = new Player(bufferKlick11).connect(klickMasterGain);
+const playerKlick12 = new Player(bufferKlick12).connect(klickMasterGain);
+const playerKlick13 = new Player(bufferKlick13).connect(klickMasterGain);
+const playerKlick14 = new Player(bufferKlick14).connect(klickMasterGain);
+const playerKlick15 = new Player(bufferKlick15).connect(klickMasterGain);
+const playerKlick16 = new Player(bufferKlick16).connect(klickMasterGain);
+
+//initialize reverb
+const rhythmfigure2MasterGain = new Gain(1).toDestination();
+//const reverbRhythmFigure2 = new Reverb(5).connect(rhythmfigure2MasterGain);
+const reverbRhythmFigure2 = new Reverb(5).toDestination();
+reverbRhythmFigure2.wet = 0.1
+var gaindDroneMaster = new Gain(0.6).toDestination();
+const reverbDrone = new Reverb(200).connect(gaindDroneMaster);
+
 
 //Sequencer Interface
 var sequencer = new
 Nexus.Sequencer('#seq',{
-    'size': [750,200],
+    'size': [750,250],
     'mode': 'toggle',
-    'rows': 6,
+    'rows': 7,
     'columns': 48,
    });
 sequencer.colorize("fill","#808080")
@@ -90,48 +101,73 @@ sequencer.colorize("accent","#000000")
 
 
 //const buffer = new ToneAudioBuffer();
-let oscillator1 = [...Array(32)]; // player voices
-let gains = [...Array(32)];
+let oscillatorRhythmFigure1 = [...Array(32)]; // player voices
+let gainsRythmFigure1 = [...Array(32)];
+let oscillatorRhythmFigure2 = [...Array(32)]; // player voices
+let gainsRythmFigure2 = [...Array(32)];
+let oscillatorDrone = [...Array(32)];
+let gainsDrone = [...Array(32)];
+let tremoloDrone = [...Array(32)];
+let noise = [...Array(32)];
 let randomGainValues= [...Array(32)];
 let exponentialGainValues = [...Array(32)];
 let arrayTest = [...Array(32)];
 let frequencies =  [...Array(32)];
-let offsetFRQ = 5;
+let offsetFRQ1 = 2;
+let frequenciesRhythmFigure2 =  [...Array(32)];
+let offsetFRQ2 = 10;
 const synth = new Synth().toDestination();
-
-Transport.bpm.value = 80;
 
 const generateButton = document.getElementById('generate');
 const playButton = document.getElementById('play');
-//const stopButton = document.getElementById('stop');
-//const newRandomGainsButton = document.getElementById('init');
 
 
 frequencies.forEach((item,index) => {
-    frequencies[index] = MidiClass.mtof(MidiClass.ftom(Math.pow(index +offsetFRQ,2)));
+    frequencies[index] = MidiClass.mtof(MidiClass.ftom(Math.pow(index +offsetFRQ1,2)));
 });
 
-//console.log(frequencies);
+frequenciesRhythmFigure2.forEach((item,index) => {
+    frequenciesRhythmFigure2[index] = MidiClass.mtof(MidiClass.ftom(Math.pow(index +offsetFRQ2,2)));
+});
 
-function exponentialGains(index){
+function exponentialGains(index,dropgains,loudnessControl){
     let scaledIndex = index / 32;
-    exponentialGainValues [index] = Math.round(Math.pow(scaledIndex-1,2)*100)/1000;
-    arrayTest[index] = exponentialGainValues [index] * Math.round(Math.random()*10)/10;
-
-    return (arrayTest[index]);
+    let random = Math.random();
+    var exponentialGainValue = Math.round(Math.pow(scaledIndex-1,2)*100)/loudnessControl;
+    console.log(exponentialGainValue);  
+    exponentialGainValue *= Math.round(Math.random()*10)/10;
+    
+    if (random <= dropgains) return (exponentialGainValue);
+    else return 0;
 }
 
-function randomGains (index){
-    randomGainValues[index] = Math.round(Math.random()*10)/1000;
-    return (randomGainValues[index]);
-};
-
-const env = new AmplitudeEnvelope({
-    attack: 0.0,
-    decay: 0.2,
-    sustain: 1.0,
-    release: 0.8,
+const envRhythmFigure1 = new AmplitudeEnvelope({
+    attack: 0.01,
+    decay: 1.0,
+    sustain: 0.0,
+    release: 0.0,
 }).toDestination();
+
+const envRhythmFigure1Noise = new AmplitudeEnvelope({
+    attack: 0.01,
+    decay: 0.5,
+    sustain: 0.0,
+    release: 0.0,
+}).toDestination();
+
+const envRhythmFigure2 = new AmplitudeEnvelope({
+    attack: 0.01,
+    decay: 0.01,
+    sustain: 0.6,
+    release: 0.1,
+}).toDestination();
+
+const envDrone = new AmplitudeEnvelope({
+    attack: 0.01,
+    decay: 0.01,
+    sustain: 0.7,
+    release: 0.1,
+}).connect(reverbDrone);
 
 function shuffle(array) {
     const r = (from = 0, to = 1) => from + Math.random() * (to - from);
@@ -340,14 +376,107 @@ function bassRhythm(array, fullKickOutput,flag,offset){
 
 }
 
+/*
+1. Rule: every trigger lands on even index incl. 0:             [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]
+2. Rule: every trigger has min 4 tringgers distance:            [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0]
+3. Rule: expertion: last trigger can have 2 trigger dicance:    [1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0]
+4. Rule: if there is a trigger on the 2nd last trigger of the bar before, the trigger cant land on the 2nd trigger becuase of 2. Rule: Bar1: [1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0], Bar2: [0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0]*/
+function RhythmFigures(array, flag){
+
+    //count how much triggers are in array
+    var count = 0;
+    array.forEach((e,i) =>{
+        if(e===1) count++;
+    });
+    console.log(count);
+
+    var arrayABS = [];
+
+    while(true){
+        while (true)
+        {
+            //1. Rule
+            while(true) {
+                array = shuffle(array);
+                if (array.every((e,i) => {
+                    if(e === 1) return i % 2 === 0;
+                    else return true; // wenns kein schlag ist alles gut, soll weither ggehen
+                })) {
+                    break;
+                }
+            }
+            
+            console.log("Bass: " + array);
+    
+            //2. Rule
+            arrayABS = triggerABS(array);
+    
+            if(flag === 1){ // 4. Rule
+                if(array[0] === 0){
+                    if (arrayABS.every((e,i) => {
+                        if(e < 4 && i === count-1){ // 3. Rule
+                            return true
+                        }
+                        else if(e < 4) return false;
+                        else return true;
+                    })) {
+                        break;
+                    }
+                }
+            }
+    
+            else if (flag === 0){ // 4. Rule
+                if (arrayABS.every((e,i) => {
+                    if(e < 4 && i === count-1){ // 3.Rule
+                        return true
+                    }
+                    else if(e < 4) return false;
+                    else return true;
+                })) {
+                    break;
+                }
+            }
+    
+    
+    
+        }
+
+     {
+        break;
+    }
+
+    }
+
+    return array;
+
+}
+
 function checklastTrigger(array){
     if(array[14] === 1 ) return 1;
     else return 0;
 }
 
+/*
+1. Rule: Klicks düfren überall laden
+2. Rule: Klicks werden in zwei Gruppen abwechselnd abgespielt
+3. Rule: Wenn Gruppe1(Klicks werde nicht gepielt, Pause) dann wird bis zu 4 Schläge lang keine Klicks abgespielt
+4. Rule: Wenn Gruppe2(Klicks werden gepielt) dann werden bis zu 6 Klicks hintereinander abgespielt
+5. Rule: Wenn Gruppe2(Klicks werden gepielt) dann werden kommt danach immer Gruppe1 mit einer Pause
+6. Rule: Länge von beiden Gruppen sind zufällig
+*/
 function generateKlicks(){
-
+    //var array = new Array(48).fill(1);
+    //return array;
     var array = new Array(48).fill(0);
+    array = array.map((e,i) => {
+        if(i % 2 === 0) return 1;
+        else return 0;
+    });
+
+    console.log(array);
+    return array;
+
+/*  var array = new Array(48).fill(0);
     var random = 0;
     var flag = 0;
     var counteroff = Math.ceil(Math.random()*4);
@@ -359,7 +488,7 @@ function generateKlicks(){
         if (flag === 0)
         {   
             if(counteroff === 0){
-                counteron = Math.ceil(Math.random()*5);
+                counteron = 2 + Math.ceil(Math.random()*4);
                 flag = 1;
                 return 0;
             }
@@ -382,7 +511,7 @@ function generateKlicks(){
 
     console.log(array);
     return array;
-
+*/
 }
 
 generateButton.addEventListener('click', async () => {
@@ -397,14 +526,14 @@ generateButton.addEventListener('click', async () => {
 
     //Generate Kicks
     const bar1Kick = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    const bar2Kick = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    const bar3Kick = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar2Kick = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar3Kick = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
     var flag = 0;
     const generatedBar1Kick = kickRhythm(bar1Kick,flag);
-    flag = checklastTrigger(bar1Kick);
+    flag = checklastTrigger(generatedBar1Kick);
     const generatedBar2Kick = kickRhythm(bar2Kick,flag);
-    flag = checklastTrigger(bar2Kick);
+    flag = checklastTrigger(generatedBar2Kick);
     const generatedBar3Kick = kickRhythm(bar3Kick,flag);
 
     const fullgeneratedKick = generatedBar1Kick.concat(generatedBar2Kick,generatedBar3Kick);
@@ -414,15 +543,15 @@ generateButton.addEventListener('click', async () => {
     const fullKickOutput = [generatedBar1Kick, generatedBar2Kick, generatedBar3Kick];
 
     //Generate Bass
-    const bar1Bass = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    const bar2Bass = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar1Bass = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar2Bass = [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0];
     const bar3Bass = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
     var flag = 0;
     const generatedBar1Bass = bassRhythm(bar1Bass,fullKickOutput,flag,0);
-    flag = checklastTrigger(bar1Bass);
+    flag = checklastTrigger(generatedBar1Bass);
     const generatedBar2Bass = bassRhythm(bar2Bass,fullKickOutput,flag,1);
-    flag = checklastTrigger(bar2Bass);
+    flag = checklastTrigger(generatedBar2Bass);
     const generatedBar3Bass = bassRhythm(bar3Bass,fullKickOutput,flag,2);
 
     const fullgeneratedBass = generatedBar1Bass.concat(generatedBar2Bass,generatedBar3Bass);
@@ -437,20 +566,31 @@ generateButton.addEventListener('click', async () => {
     const bar3RhythmFigure1 = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
     var flag = 0;
-    const generatedRhythmFigure1Bar1 = bassRhythm(bar1RhythmFigure1,fullBassOutput,flag,0);
-    flag = checklastTrigger(bar1Bass);
-    const generatedRhythmFigure1Bar2 = bassRhythm(bar2RhythmFigure1,fullBassOutput,flag,1);
-    flag = checklastTrigger(bar2Bass);
-    const generatedRhythmFigure1Bar3 = bassRhythm(bar3RhythmFigure1,fullBassOutput,flag,2);
+    const generatedRhythmFigure1Bar1 = RhythmFigures(bar1RhythmFigure1,flag);
+    flag = checklastTrigger(generatedRhythmFigure1Bar1);
+    const generatedRhythmFigure1Bar2 = RhythmFigures(bar2RhythmFigure1,flag);
+    flag = checklastTrigger(generatedRhythmFigure1Bar2);
+    const generatedRhythmFigure1Bar3 = RhythmFigures(bar3RhythmFigure1,flag);
 
     const fullgeneratedRhythmFigure1 = generatedRhythmFigure1Bar1.concat(generatedRhythmFigure1Bar2,generatedRhythmFigure1Bar3);
-    sequencer.matrix.set.row(4,fullgeneratedRhythmFigure1);
+
+    // Generate Rhythm Figure 2
+    const bar1RhythmFigure2 = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar2RhythmFigure2 = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bar3RhythmFigure2 = [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+    var flag = 0;
+    const generatedRhythmFigure2Bar1 = RhythmFigures(bar1RhythmFigure2,flag);
+    flag = checklastTrigger(generatedRhythmFigure2Bar1);
+    const generatedRhythmFigure2Bar2 = RhythmFigures(bar2RhythmFigure2,flag);
+    flag = checklastTrigger(generatedRhythmFigure2Bar2);
+    const generatedRhythmFigure2Bar3 = RhythmFigures(bar3RhythmFigure2,flag);
+
+    const fullgeneratedRhythmFigure2 = generatedRhythmFigure2Bar1.concat(generatedRhythmFigure2Bar2,generatedRhythmFigure2Bar3);
 
     // Generate Klicks
     const fullgeneratedKlicks = generateKlicks();
     
-
-
     // load audio samples
     await bufferKick1.load(audioFileUrlKick1);
     await bufferKick2.load(audioFileUrlKick2);
@@ -478,7 +618,7 @@ generateButton.addEventListener('click', async () => {
 
 
     //start transport
-    Transport.bpm.value = 120;
+    Transport.bpm.value = 150;
     Transport.start();
 
     //------>>>>play Kick 
@@ -514,7 +654,6 @@ generateButton.addEventListener('click', async () => {
 
     partKick.loopEnd = '3:0:0';
     partKick.loop = true;
-    partKick.start();
 
     //------>>>>play Bass
     function playBass(time, note) {
@@ -539,6 +678,7 @@ generateButton.addEventListener('click', async () => {
                 return [e, `2:${Math.floor(current/4)}:${i%4}`]
             }
         });
+
     patternBass = patternBass.filter(e => e[0] === 1)
     patternBass = patternBass.map((e,i) => [e[1], `C${i}`]);
 
@@ -546,7 +686,92 @@ generateButton.addEventListener('click', async () => {
 
     partBass.loopEnd = '3:0:0';
     partBass.loop = true;
-    partBass.start();
+    
+
+    //------>>>>play Rythm Figure 1
+    gainsRythmFigure1 = gainsRythmFigure1.map((item,index) => {
+        return (new Gain({gain: exponentialGains(index,0.5,150)}).connect(envRhythmFigure1)); //connect(env)
+    });
+
+    const gainNoiseRhythmFigure1 = new Gain(0.2).connect(envRhythmFigure1Noise);
+    const noiseRhythmFigure1 = new Noise("pink").connect(gainNoiseRhythmFigure1).start();
+
+    oscillatorRhythmFigure1 = oscillatorRhythmFigure1.map((item,index) => {
+        return (new Oscillator({frequency: frequencies[index], type: "sine"})).connect(gainsRythmFigure1[index]).start();
+    });
+
+    function playRhythmFigure1(time, note) {
+        console.log('RhythmFigure1', time, note)
+        envRhythmFigure1Noise.triggerAttackRelease(time);
+        envRhythmFigure1.triggerAttackRelease(time);
+        //playerBass.start(time);
+    };
+
+    console.log(fullgeneratedRhythmFigure1);
+    current = 0;
+    var patternRhythmFigure1 = fullgeneratedRhythmFigure1
+        .map((e,i) => {
+            if(i<=15){
+                current = i;
+                return [e, `0:${Math.floor(current/4)}:${i%4}`]
+            }
+            else if(i>=16 && i<32) {
+                current = i-16;
+                return [e, `1:${Math.floor(current/4)}:${i%4}`]
+            } 
+            else{
+                current = i-32;
+                return [e, `2:${Math.floor(current/4)}:${i%4}`]
+            }
+        });
+    
+    patternRhythmFigure1 = patternRhythmFigure1.filter(e => e[0] === 1)
+    patternRhythmFigure1 = patternRhythmFigure1.map((e,i) => [e[1], `C${i}`]);
+
+    const partRhythmFigure1 = new Part(playRhythmFigure1, patternRhythmFigure1);
+
+    partRhythmFigure1.loopEnd = '3:0:0';
+    partRhythmFigure1.loop = true;
+
+       //------>>>>play Rythm Figure 2
+    gainsRythmFigure2 = gainsRythmFigure2.map((item,index) => {
+        return (new Gain({gain: exponentialGains(index,0.5,500)}).connect(envRhythmFigure2)); //connect(env)
+    });
+
+    oscillatorRhythmFigure2 = oscillatorRhythmFigure2.map((item,index) => {
+        return (new Oscillator({frequency: frequenciesRhythmFigure2[index], type: "sine"})).connect(gainsRythmFigure2[index]).start();
+    });
+
+    function playRhythmFigure2(time, note) {
+        console.log('RhythmFigure2', time, note)
+        envRhythmFigure2.triggerAttackRelease(time,"8n");
+    };
+
+    console.log(fullgeneratedRhythmFigure2);
+    current = 0;
+    var patternRhythmFigure2 = fullgeneratedRhythmFigure2
+        .map((e,i) => {
+            if(i<=15){
+                current = i;
+                return [e, `0:${Math.floor(current/4)}:${i%4}`]
+            }
+            else if(i>=16 && i<32) {
+                current = i-16;
+                return [e, `1:${Math.floor(current/4)}:${i%4}`]
+            } 
+            else{
+                current = i-32;
+                return [e, `2:${Math.floor(current/4)}:${i%4}`]
+            }
+        });
+    
+    patternRhythmFigure2 = patternRhythmFigure2.filter(e => e[0] === 1)
+    patternRhythmFigure2 = patternRhythmFigure2.map((e,i) => [e[1], `C${i}`]);
+
+    const partRhythmFigure2 = new Part(playRhythmFigure2, patternRhythmFigure2);
+
+    partRhythmFigure2.loopEnd = '3:0:0';
+    partRhythmFigure2.loop = true;
     
     //------>>>>play Klick
     function playKlick(time, note) {
@@ -594,16 +819,68 @@ generateButton.addEventListener('click', async () => {
 
     partKlick.loopEnd = '3:0:0';
     partKlick.loop = true;
-    partKlick.start();
 
-    sequencer.matrix.set.row(5,fullgeneratedKlicks);
+    //------>>>>play Drone
+    const droneTrigger = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    
+    gainsDrone = gainsDrone.map((item,index) => {
+        return (new Gain({gain: exponentialGains(index,0.4,800)}).connect(envDrone)); //connect(env)
+    });
+    
+    tremoloDrone = tremoloDrone.map((item,index) => {
+        return (new Tremolo("8n", 0.4).connect(gainsDrone[index]).start());
+    });
+
+    oscillatorDrone = oscillatorDrone.map((item,index) => {
+        return (new Oscillator({frequency: frequencies[index], type: "sine"})).connect(tremoloDrone[index]).start();
+    });
+
+    function playDrone(time, note) {
+        console.log('drone', time, note);
+        
+        envDrone.triggerAttackRelease(time, "3:0:0");
+    };
+
+
+    current = 0;
+    var patternDrone = droneTrigger
+        .map((e,i) => {
+            if(i<=15){
+                current = i;
+                return [e, `0:${Math.floor(current/4)}:${i%4}`]
+            }
+            else if(i>=16 && i<32) {
+                current = i-16;
+                return [e, `1:${Math.floor(current/4)}:${i%4}`]
+            } 
+            else{
+                current = i-32;
+                return [e, `2:${Math.floor(current/4)}:${i%4}`]
+            }
+        });
+
+    patternDrone = patternDrone.filter(e => e[0] === 1)
+    patternDrone = patternDrone.map((e,i) => [e[1], `C${i}`]);
+
+    const partDrone = new Part(playDrone, patternDrone);
+    partDrone.loopEnd = '3:0:0';
+    partDrone.loop = true;
+
+    
+    //------>>>>set seqeuncer
+    sequencer.matrix.set.row(4,fullgeneratedRhythmFigure1);
+    sequencer.matrix.set.row(5,fullgeneratedRhythmFigure2);
+    sequencer.matrix.set.row(6,fullgeneratedKlicks);
+
+    playButton.addEventListener('click', async () => {
+        partKick.start();
+        partBass.start();
+        partRhythmFigure1.start();
+        //partRhythmFigure2.start();
+        partKlick.start();
+        partDrone.start();
+
+
+    });
 
 });
-
-
-
-/*
-Transport.scheduleRepeat((time) => {
-	// use the callback time to schedule events
-	env.triggerAttackRelease('8n',time);
-}, "4n");*/
