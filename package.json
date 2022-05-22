@@ -9,10 +9,20 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "math": "^0.0.3",
     "nexusui": "^2.1.6",
+    "p5": "^1.4.1",
     "tone": "^14.7.77"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/milianmori/generativemusic.git"
+  },
+  "bugs": {
+    "url": "https://github.com/milianmori/generativemusic/issues"
+  },
+  "homepage": "https://github.com/milianmori/generativemusic#readme",
+  "devDependencies": {},
+  "description": ""
 }

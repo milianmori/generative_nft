@@ -7,3 +7,5 @@ Add Homebrew's pip path to your PYTHONPATH environment variable (you probably sh
 mm_instru_test_1 checken: wieso ging das nicht mit fullgeneratedkick?
 
 const fullgeneratedKick = generatedBar1Kick.concat(generatedBar2Kick,generatedBar3Kick);
+
+was macht break
