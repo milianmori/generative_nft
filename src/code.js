@@ -166,14 +166,17 @@ const bufferKlick14 = new ToneAudioBuffer();
 const bufferKlick15 = new ToneAudioBuffer();
 const bufferKlick16 = new ToneAudioBuffer();
 
-const klickMasterGain = new Gain(0.8).toDestination();
+//master gains
+const kickMasterGain = new Gain(0.7).toDestination();
+const klickMasterGain = new Gain(0.9).toDestination();
+
 klickMasterGain.connect(wave);
 
 //initialize palyers
-const playerKick1 = new Player(bufferKick1).toDestination();
-const playerKick2 = new Player(bufferKick2).toDestination();
-const playerKick3 = new Player(bufferKick3).toDestination();
-const playerBass = new Player(bufferBass101).toDestination();
+const playerKick1 = new Player(bufferKick1).connect(kickMasterGain);
+const playerKick2 = new Player(bufferKick2).connect(kickMasterGain);
+const playerKick3 = new Player(bufferKick3).connect(kickMasterGain);
+const playerBass = new Player(bufferBass101).connect(kickMasterGain);
 const playerKlick1 = new Player(bufferKlick1).connect(klickMasterGain);
 const playerKlick2 = new Player(bufferKlick2).connect(klickMasterGain);
 const playerKlick3 = new Player(bufferKlick3).connect(klickMasterGain);
@@ -190,6 +193,9 @@ const playerKlick13 = new Player(bufferKlick13).connect(klickMasterGain);
 const playerKlick14 = new Player(bufferKlick14).connect(klickMasterGain);
 const playerKlick15 = new Player(bufferKlick15).connect(klickMasterGain);
 const playerKlick16 = new Player(bufferKlick16).connect(klickMasterGain);
+
+
+
 
 //initialize reverb
 const rhythmfigure2MasterGain = new Gain(1).toDestination();
@@ -979,7 +985,7 @@ generateButton.addEventListener('click', async () => {
     //------>>>>play Drone
     const droneTrigger = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     
-    const droneGain = new Gain(0.5).toDestination();
+    const droneGain = new Gain(0.6).toDestination();
     gainsDrone = gainsDrone.map((item,index) => {
         return (new Gain({gain: exponentialGain(index,0.4,800)}).connect(droneGain)); //connect(env)
     });
