@@ -2,8 +2,6 @@
 import {Destination, LFO, Waveform, Reverb, Tremolo, Noise, start, MidiClass, Part, Oscillator, Gain, Transport, AmplitudeEnvelope, Synth, Offline, ToneAudioBuffer, Player} from 'tone';
 import * as Nexus from 'nexusui';
 
-import { asdf } from './stuff';
-
 //import files
 import audioFileUrlKick1 from 'url:./samples/kick01.mp3';
 import audioFileUrlKick2 from 'url:./samples/kick02.mp3';
@@ -27,120 +25,6 @@ import audioFileUrlKlick13 from 'url:./samples/klick13.mp3';
 import audioFileUrlKlick14 from 'url:./samples/klick14.mp3';
 import audioFileUrlKlick15 from 'url:./samples/klick15.mp3';
 import audioFileUrlKlick16 from 'url:./samples/klick16.mp3';
-
-let wave = new Waveform();
-
-import p5 from 'p5';
-
-let sketch = function(p) {
-    let masterVolume = -6; // in decibel.
-
-    let ready = false;
-
-    let osc; // these two will be our audio oscillators
-    let osc2;
-    let lfo; // low frequency oscillator
-
-    let wave; // this object allows us to draw waveforms
-    p.setup = function() {
-        p.createCanvas(p.windowWidth, p.windowHeight);
-        
-
-        // 4 differents types: sine (default), square, triangle and sawtooth
-        osc = new Oscillator({
-            type: "sine",
-            frequency: 220,
-            volume: -3
-        });
-        osc.toDestination(); // --> shorthand for "connect(Tone.Master)"
-
-        osc2 = new Oscillator({
-            type: "triangle",
-            frequency: 220,
-            volume: -3
-        });
-        osc2.frequency.value = 220; // 220hz -> A3
-        osc2.toDestination(); // --> shorthand for "connect(Tone.Master)"
-
-        lfo = new LFO("0.1hz", 210, 230);
-        lfo.connect(osc.frequency);
-
-        wave = new Waveform();
-        Destination.connect(wave);
-
-        Destination.volume.value = masterVolume;
-    }
-
-// On window resize, update the canvas size
-    p.windowResized = function() {
-        p.resizeCanvas(p.windowWidth, p.windowHeight);
-    };
-
-    p.draw = function() {
-
-        p.background(0);
-
-        if (ready) {
-          // do the audio stuff
-
-          osc.frequency.value = p.map(p.mouseX, 0, p.width, 110, 880);
-      
-          p.stroke(255);
-
-          let buffer = wave.getValue(0);
-      
-          // look a trigger point where the samples are going from
-          // negative to positive
-          let start = 0;
-          for (let i = 1; i < buffer.length; i++) {
-            if (buffer[i - 1] < 0 && buffer[i] >= 0) {
-              start = i;
-              break; // interrupts a for loop
-            }
-          }
-      
-          // calculate a new end point such that we always
-          // draw the same number of samples in each frame
-          let end = start + buffer.length / 2;
-    
-          // drawing the waveform
-          for (let i = start; i < end; i++) {
-            let x1 = p.map(i - 1, start, end, 0, p.width);
-            let y1 = p.map(buffer[i - 1], -1, 1, 0, p.height);
-            let x2 = p.map(i, start, end, 0, p.width);
-            let y2 = p.map(buffer[i], -1, 1, 0, p.height);
-            p.line(x1, y1, x2, y2);
-          }
-        } else {
-          p.fill(255);
-          p.noStroke();
-          p.textAlign(p.CENTER, p.CENTER);
-          p.text("CLICK TO START", p.width / 2, p.height / 2);
-        }
-
-    };
-
-    p.mousePressed = function() {
-        if (!ready) {
-          // ! --> not
-          // start our audio objects here
-      
-          //osc.start();
-          //osc2.start();
-          lfo.start();
-      
-          ready = true;
-        }
-        else {
-          ready = false;
-          osc.stop();
-          osc2.stop();
-          lfo.stop();
-        }
-      }
-};
-
-let myp5 = new p5(sketch);
 
 //initialize kicks into buffer
 const bufferKick1 = new ToneAudioBuffer();
@@ -169,8 +53,6 @@ const bufferKlick16 = new ToneAudioBuffer();
 //master gains
 const kickMasterGain = new Gain(0.7).toDestination();
 const klickMasterGain = new Gain(0.9).toDestination();
-
-klickMasterGain.connect(wave);
 
 //initialize palyers
 const playerKick1 = new Player(bufferKick1).connect(kickMasterGain);
@@ -239,49 +121,7 @@ let frequenciesRhythmFigure2 =  [...Array(32)];
 let offsetFRQ2 = 10;
 const synth = new Synth().toDestination();
 
-const generateButton = document.getElementById('generate');
-const playButton = document.getElementById('playback');
-const hideButton = document.getElementById('hideall');
-var inputText = document.getElementById("inputField");
-
-hideButton.addEventListener("keyup", function(event) {
-    if (event.code === 65) {
-       event.preventDefault();
-       document.getElementById("hideall").click();
-    }
- });
-
-hideButton.addEventListener('click', async () => {
-    var x = document.getElementById("seq");
-    var y = document.getElementById("playback");
-    var z = document.getElementById("generate");
-    var a = document.getElementById("hideall");
-
-
-
-    if (x.style.display === "none") {
-        x.style.display = "block";
-      } else {
-        x.style.display = "none";
-      }
-    if (y.style.display === "none") {
-    y.style.display = "block";
-    } else {
-    y.style.display = "none";
-    }
-
-    if (z.style.display === "none") {
-      z.style.display = "block";
-    } else {
-      z.style.display = "none";
-    }
-
-    if (a.style.display === "none") {
-        a.style.display = "block";
-      } else {
-        a.style.display = "none";
-      }
-});
+const generateButton = document.getElementById('generate')
 
 
 frequencies.forEach((item,index) => {
@@ -1043,16 +883,12 @@ generateButton.addEventListener('click', async () => {
     sequencer.matrix.set.row(5,fullgeneratedRhythmFigure2);
     sequencer.matrix.set.row(6,fullgeneratedKlicks);
 
-    playButton.addEventListener('click', async () => {
-        partKick.start();
-        partBass.start();
-        partRhythmFigure1.start();
-        //partRhythmFigure2.start();
-        partKlick.start();
-        partDrone.start();
-
-
-    });
+    partKick.start();
+    partBass.start();
+    partRhythmFigure1.start();
+    //partRhythmFigure2.start();
+    partKlick.start();
+    partDrone.start();
 
 });
 
